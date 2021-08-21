@@ -16,7 +16,7 @@ pub struct Opts {
     #[clap(short, long, conflicts_with = "example")]
     pub tree: bool,
     /// Displays an example config file. Cannot be used with other arguments.
-    #[clap(long)]
+    #[clap(long, conflicts_with = "random")]
     pub example: bool,
     /// Renders a randomly generated scene
     #[clap(long, conflicts_with = "scene")]
