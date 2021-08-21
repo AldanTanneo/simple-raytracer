@@ -1,0 +1,66 @@
+(
+    image: Image(
+        height: 1080,
+        samples_per_pixel: 150,
+        max_depth: 50,
+    ),
+    camera: ThinLens(
+        origin: (0.5, 2.5, 10.0),
+        look_at: (2.0, 1.5, 1.0),
+        up_vector: (0, 1, 0),
+        aspect_ratio: (16, 9),
+        vertical_fov: 30,
+        aperture: 0.01,
+        focus_distance: 6.94
+    ),
+    world: World(
+        background_color: Rgb(0.15,0.15,0.15),
+        materials: {
+            "ground": Lambertian (
+                albedo: Rgb(0.5, 0.5, 0.5),
+            ),
+            "silver": Metal (
+                albedo: Rgb(0.8, 0.05, 0.8),
+                fuzziness: 0.05,
+            ),
+            "cyan": Lambertian (
+                albedo: Cyan,
+            ),
+            "white_light": Emissive (
+                color: White,
+                intensity: 2.0,
+            ),
+            "yellow_light": Emissive (
+                color: Yellow,
+                intensity: 1.5,
+            )
+        },
+        objects: [
+            Sphere(
+                center: (0.0, -1000.0, 0.0),
+                radius: 1000.0,
+                material: "ground",
+            ),
+            Sphere(
+                center: (3, 0, 3),
+                radius: 1,
+                material: "yellow_light"
+            ),
+            Sphere(
+                center: (0.0, 0.0, 0.0),
+                radius: 1.0,
+                material: "white_light",
+            ),
+            Sphere(
+                center: (2.0, 1.5, 1.0),
+                radius: 1.5,
+                material: "silver",
+            ),
+            Sphere(
+                center: (1.0, 0.5, 3.0),
+                radius: 0.5,
+                material: "cyan",
+            ),
+        ]
+    )
+)
