@@ -86,6 +86,7 @@ fn main() -> Result<()> {
         );
         Config::parse(config_file)?
     } else if opts.random {
+        println!("Rendering a random scene (image size: 800x1200, 150spp).");
         opts.scene = Some("random_scene.ron".into());
         Config::random_scene(&mut global_rng)
     } else {
