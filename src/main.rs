@@ -72,7 +72,7 @@ fn ray_color<H: Hittable>(
 }
 
 fn main() -> Result<()> {
-    let mut global_rng = FastRng::default();
+    let mut global_rng = FastRng::new(rand::random::<std::num::NonZeroU64>().into());
 
     let mut opts = command_line_interface::Opts::parse();
     if opts.example {
