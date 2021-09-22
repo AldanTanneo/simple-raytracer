@@ -75,8 +75,8 @@ impl Config {
 
         for a in -11..11 {
             for b in -11..11 {
-                let (choose_mat, a_rand, b_rand): (f64, f64, f64) = rng.gen();
-                let center: Vec3 = (a as f64 + 0.9 * a_rand, 0.2, b as f64 + 0.9 * b_rand).into();
+                let (choose_mat, a_rand, b_rand): (f32, f32, f32) = rng.gen();
+                let center: Vec3 = (a as f32 + 0.9 * a_rand, 0.2, b as f32 + 0.9 * b_rand).into();
 
                 if (center - Vec3::new(4.0, 0.2, 0.0)).length_squared() > 0.81 {
                     if choose_mat < 0.8 {
@@ -101,7 +101,7 @@ impl Config {
                     } else if choose_mat < 0.95 {
                         // metal
                         let albedo = Vec3::random(rng) * 0.5 + 0.5;
-                        let fuzziness = rng.gen::<f64>() * 0.5;
+                        let fuzziness = rng.gen::<f32>() * 0.5;
                         let material_name = format!("metal.{}.{}", a, b);
                         world.materials.insert(
                             material_name.clone(),

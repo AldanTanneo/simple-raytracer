@@ -4,7 +4,6 @@ use std::fmt;
 use std::num::Wrapping;
 
 #[derive(Clone)]
-#[cfg_attr(feature = "serde-1", derive(Serialize, Deserialize))]
 pub struct SplitMix64(u64);
 
 // Custom Debug implementation that does not expose the internal state

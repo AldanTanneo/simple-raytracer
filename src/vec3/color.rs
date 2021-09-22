@@ -1,28 +1,13 @@
 use rand::Rng;
 
-pub const COLOR_MATRIX: [[f32; 3]; 3] = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [0.5, 0.0, 0.5]];
-pub const INVERSE_MATRIX: [[f32; 3]; 3] = [[1.0, 1.0, -1.0], [-1.0, 1.0, 1.0], [1.0, -1.0, 1.0]];
-
 pub const MAX_PIXEL: f32 = 256.0 - f32::EPSILON;
 
-#[cfg(not(feature = "spectral_colors"))]
 macro_rules! new_color {
     ($r:expr, $g:expr, $b:expr) => {
         $crate::vec3::color::Color {
             r: $r,
             g: $g,
             b: $b,
-        }
-    };
-}
-
-#[cfg(feature = "spectral_colors")]
-macro_rules! new_color {
-    ($r:expr, $g:expr, $b:expr) => {
-        $crate::vec3::color::Color {
-            r: 0.34 * $r + 0.33 * ($g + $b),
-            g: 0.34 * $g + 0.33 * ($b + $r),
-            b: 0.34 * $b + 0.33 * ($r + $g),
         }
     };
 }
@@ -34,7 +19,6 @@ pub struct Color {
     pub b: f32,
 }
 
-#[cfg(not(feature = "spectral_colors"))]
 impl Color {
     #[inline(always)]
     pub fn red(self) -> f32 {
@@ -49,24 +33,6 @@ impl Color {
     #[inline(always)]
     pub fn blue(self) -> f32 {
         self.b
-    }
-}
-
-#[cfg(feature = "spectral_colors")]
-impl Color {
-    #[inline(always)]
-    pub fn red(self) -> f32 {
-        67.0 * self.r - 33.0 * (self.g + self.b)
-    }
-
-    #[inline(always)]
-    pub fn green(self) -> f32 {
-        67.0 * self.g - 33.0 * (self.b + self.r)
-    }
-
-    #[inline(always)]
-    pub fn blue(self) -> f32 {
-        67.0 * self.b - 33.0 * (self.r + self.g)
     }
 }
 

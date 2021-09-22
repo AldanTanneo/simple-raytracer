@@ -11,18 +11,18 @@ use crate::FastRng;
 #[derive(Debug, Clone)]
 pub struct Volume<'a> {
     pub center: Point3,
-    pub radius: f64,
-    pub density: f64,
-    pub material: &'a Box<dyn Material + 'a>,
-    pub distribution: Normal<f64>,
+    pub radius: f32,
+    pub density: f32,
+    pub material: &'a (dyn Material + 'a),
+    pub distribution: Normal<f32>,
 }
 
 impl<'a> Volume<'a> {
     pub fn new(
         center: Point3,
-        radius: f64,
-        density: f64,
-        material: &'a Box<dyn Material + 'a>,
+        radius: f32,
+        density: f32,
+        material: &'a (dyn Material + 'a),
     ) -> Self {
         Self {
             center,
@@ -35,13 +35,13 @@ impl<'a> Volume<'a> {
 }
 
 impl<'a> Hittable for Volume<'a> {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rng: &mut FastRng) -> Hit {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, rng: &mut FastRng) -> Hit {
         let oc = ray.origin - self.center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(ray.direction);
         let c = oc.length_squared() - self.radius * self.radius;
         let delta = half_b.powi(2) - a * c;
-        if delta < 1e-8_f64 {
+        if delta < 1e-8_f32 {
             return None;
         }
 
@@ -61,11 +61,11 @@ impl<'a> Hittable for Volume<'a> {
 
         let hit_chance = 0.25 * (point1 - point2).length_squared();
 
-        if rng.gen::<f64>() * self.radius * self.radius > self.density * self.density * hit_chance {
+        if rng.gen::<f32>() * self.radius * self.radius > self.density * self.density * hit_chance {
             return None;
         }
 
-        let random_pos: f64 = rng.gen();
+        let random_pos: f32 = rng.gen();
         let time = (1.0 - random_pos) * root1 + random_pos * root2;
         let outward_normal = Vec3::random_in_unit_sphere(rng);
         Some(HitRecord::new(

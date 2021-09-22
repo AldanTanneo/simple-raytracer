@@ -9,11 +9,11 @@ use crate::FastRng;
 pub struct Quad<'a> {
     pub vertex: Point3,
     pub edges: (Vec3, Vec3),
-    pub material: &'a Box<dyn Material + 'a>,
+    pub material: &'a (dyn Material + 'a),
 }
 
 impl<'a> Quad<'a> {
-    pub fn new(vertex: Point3, edges: (Vec3, Vec3), material: &'a Box<dyn Material + 'a>) -> Self {
+    pub fn new(vertex: Point3, edges: (Vec3, Vec3), material: &'a (dyn Material + 'a)) -> Self {
         Self {
             vertex,
             edges,
@@ -32,12 +32,12 @@ impl<'a> Quad<'a> {
 }
 
 impl<'a> Hittable for Quad<'a> {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, _: &mut FastRng) -> Hit {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, _: &mut FastRng) -> Hit {
         let u = ray.direction;
         let (v, w) = self.edges;
         let normal = v.cross(w);
         let determinant = normal.dot(u);
-        if determinant.abs() < 1e-8_f64 {
+        if determinant.abs() < 1e-8_f32 {
             None
         } else {
             let a_minus_origin = self.vertex - ray.origin;
@@ -68,8 +68,8 @@ impl<'a> Hittable for Quad<'a> {
     fn bounding_box(&self) -> BoundingBox {
         let vertices = self.vertices();
         BoundingBox {
-            minimum: vertices.0.min(vertices.1).min(vertices.2).min(vertices.3) - 1e-7f64,
-            maximum: vertices.0.max(vertices.1).max(vertices.2).max(vertices.3) + 1e-7f64,
+            minimum: vertices.0.min(vertices.1).min(vertices.2).min(vertices.3) - 1e-7f32,
+            maximum: vertices.0.max(vertices.1).max(vertices.2).max(vertices.3) + 1e-7f32,
         }
     }
 }

@@ -31,7 +31,7 @@ impl From<&Color> for color::Color {
     fn from(c: &Color) -> Self {
         match c {
             /* IntRgb(r, g, b) => {
-                color::Color::new(*r as f64 / 255.0, *g as f64 / 255.0, *b as f64 / 255.0)
+                color::Color::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0)
             }*/
             Rgb(red, green, blue) => color::Color::new(*red, *green, *blue),
             Hex(mut value) => {
@@ -54,11 +54,11 @@ impl From<&Color> for color::Color {
     }
 }
 
-impl From<&AspectRatio> for f64 {
+impl From<&AspectRatio> for f32 {
     fn from(aspect_ratio: &AspectRatio) -> Self {
         match aspect_ratio {
             AspectRatio::Float(f) => *f,
-            AspectRatio::Fraction(a, b) => *a as f64 / *b as f64,
+            AspectRatio::Fraction(a, b) => *a as f32 / *b as f32,
         }
     }
 }
@@ -68,7 +68,7 @@ impl std::ops::Mul<&AspectRatio> for u32 {
 
     fn mul(self, rhs: &AspectRatio) -> Self::Output {
         match rhs {
-            AspectRatio::Float(f) => (self as f64 * f) as u32,
+            AspectRatio::Float(f) => (self as f32 * f) as u32,
             AspectRatio::Fraction(a, b) => (self * a) / b,
         }
     }
@@ -188,7 +188,7 @@ impl Config {
                     world.push(Box::new(sphere::Sphere::new(
                         (*center).into(),
                         *radius,
-                        material,
+                        material.as_ref(),
                     )))
                 }
                 Object::Triangle {
@@ -205,7 +205,7 @@ impl Config {
                     world.push(Box::new(triangle::Triangle::new(
                         (*vertex).into(),
                         ((*a).into(), (*b).into()),
-                        material,
+                        material.as_ref(),
                     )));
                 }
                 Object::Quad {
@@ -222,7 +222,7 @@ impl Config {
                     world.push(Box::new(quad::Quad::new(
                         (*vertex).into(),
                         ((*a).into(), (*b).into()),
-                        material,
+                        material.as_ref(),
                     )));
                 }
                 Object::Volumetric {
@@ -241,7 +241,7 @@ impl Config {
                         (*center).into(),
                         *radius,
                         *density,
-                        material,
+                        material.as_ref(),
                     )));
                 }
             }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub type Vector = (f64, f64, f64);
+pub type Vector = (f32, f32, f32);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -24,24 +24,24 @@ pub enum Camera {
         look_at: Vector,
         up_vector: Vector,
         aspect_ratio: AspectRatio,
-        aperture: f64,
-        vertical_fov: f64,
+        aperture: f32,
+        vertical_fov: f32,
         #[serde(default)]
-        focus_distance: f64,
+        focus_distance: f32,
     },
     Isomorphic {
         origin: Vector,
         look_at: Vector,
         up_vector: Vector,
         aspect_ratio: AspectRatio,
-        vertical_fov: f64,
+        vertical_fov: f32,
     },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum AspectRatio {
-    Float(f64),
+    Float(f32),
     Fraction(u32, u32),
 }
 
@@ -59,11 +59,11 @@ pub enum Material {
     },
     Metal {
         albedo: Color,
-        fuzziness: f64,
+        fuzziness: f32,
     },
     Dielectric {
         attenuation: Color,
-        refraction_index: f64,
+        refraction_index: f32,
     },
     Emissive {
         color: Color,
@@ -89,7 +89,7 @@ pub enum Color {
 pub enum Object {
     Sphere {
         center: Vector,
-        radius: f64,
+        radius: f32,
         material: String,
     },
     Triangle {
@@ -104,8 +104,8 @@ pub enum Object {
     },
     Volumetric {
         center: Vector,
-        radius: f64,
-        density: f64,
+        radius: f32,
+        density: f32,
         material: String,
     },
 }

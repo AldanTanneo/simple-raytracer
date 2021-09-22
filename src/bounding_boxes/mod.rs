@@ -15,7 +15,7 @@ pub struct BoundingBox {
 }
 
 impl BoundingBox {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> bool {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> bool {
         let inv_direction = Point3::ONES / ray.direction;
         let mut t0 = (self.minimum - ray.origin) * inv_direction;
         let mut t1 = (self.maximum - ray.origin) * inv_direction;
@@ -46,7 +46,7 @@ impl BoundingBox {
         (self.minimum + self.maximum) * 0.5
     }
 
-    /* fn area(&self) -> f64 {
+    /* fn area(&self) -> f32 {
         let tmp = self.maximum - self.minimum;
         2.0 * (tmp.x * tmp.y + tmp.y * tmp.z + tmp.z * tmp.x)
     } */
@@ -74,8 +74,8 @@ impl<'a> BoundingVolumeHierarchy<'a> {
         if world.len() == 0 {
             Err(anyhow::anyhow!("Could not create BVH from empty scene."))
         } else {
-            let mut max = f64::NEG_INFINITY;
-            let mut min: f64 = f64::INFINITY;
+            let mut max = f32::NEG_INFINITY;
+            let mut min: f32 = f32::INFINITY;
             let mut precomputed_bounding_boxes: Vec<_> = world
                 .iter()
                 .map(|obj| {
@@ -159,7 +159,7 @@ impl<'a> BoundingVolumeHierarchy<'a> {
 }
 
 impl<'a> Hittable for BoundingVolumeHierarchy<'a> {
-    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rng: &mut FastRng) -> Hit {
+    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, rng: &mut FastRng) -> Hit {
         if self.bounding_box.hit(ray, t_min, t_max) {
             match &self.sub_hierarchy {
                 Object(object) => object.hit(ray, t_min, t_max, rng),

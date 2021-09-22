@@ -10,6 +10,8 @@ mod ray;
 mod vec3;
 mod world_loader;
 
+use std::f32::consts::TAU;
+
 use anyhow::Result;
 use clap::Clap;
 use image::{ImageBuffer, Rgb};
@@ -18,11 +20,9 @@ use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 
 use bounding_boxes::BoundingVolumeHierarchy;
 use fast_random::SplitMix64;
-use hittable::Hittable;
 pub use materials::{
     dielectric::Dielectric, emissive::Emissive, lambertian::Lambertian, metal::Metal, ScatterResult,
 };
-use ray::Ray;
 use vec3::color::Color;
 use world_loader::Config;
 
@@ -31,44 +31,15 @@ pub type FastRng = SplitMix64;
 const M1: u32 = 1597334677u32;
 const M2: u32 = 3812015801u32;
 const M3: u32 = 2741598923u32;
-const M4: f64 = 1.0 / 0xffffffffu32 as f64;
+const M4: f32 = 1.0 / 0xffffffffu32 as f32;
 
 #[inline(always)]
-pub fn hash_fast(mut x: u32, mut y: u32, mut z: u32) -> f64 {
+pub fn hash_fast(mut x: u32, mut y: u32, mut z: u32) -> f32 {
     x *= M1;
     y *= M2;
     z *= M3;
     let n: u32 = (x ^ y ^ z) * M1;
-    n as f64 * M4
-}
-
-fn ray_color<H: Hittable>(
-    ray: &Ray,
-    world: &H,
-    rng: &mut FastRng,
-    max_depth: u32,
-    background_color: Color,
-) -> Color {
-    let mut ray = ray.clone();
-    let mut i = 0;
-    let mut attenuation = Color::WHITE;
-    while let Some(hit_record) = world.hit(&ray, 0.001, f64::INFINITY, rng) {
-        match hit_record.material.scatter(&ray, &hit_record, rng) {
-            ScatterResult::Ray(scattered_ray) => {
-                attenuation *= scattered_ray.attenuation;
-                ray = scattered_ray.ray;
-            }
-            ScatterResult::Emissive(color) => {
-                return attenuation * color;
-            }
-            ScatterResult::Absorbed => break,
-        }
-        i += 1;
-        if i == max_depth {
-            break;
-        }
-    }
-    background_color * attenuation
+    n as f32 * M4
 }
 
 fn main() -> Result<()> {
@@ -148,20 +119,12 @@ fn main() -> Result<()> {
 
             (0..samples_per_pixel)
                 .map(|k| {
-                    let u = (i as f64 + hash_fast(i, j, k)) / (image_width - 1) as f64;
-                    let v = (j as f64 + hash_fast(i, k, j)) / (image_height - 1) as f64;
-                    ray_color(
-                        &camera.get_ray(
-                            u,
-                            v,
-                            hash_fast(j, i, k),
-                            std::f64::consts::TAU * hash_fast(j, k, i),
-                        ),
-                        &world,
-                        rng,
-                        max_depth,
-                        background_color,
-                    )
+                    let u = (i as f32 + hash_fast(i, j, k)) / (image_width - 1) as f32;
+                    let v = (j as f32 + hash_fast(i, k, j)) / (image_height - 1) as f32;
+
+                    camera
+                        .get_ray(u, v, hash_fast(j, i, k), TAU * hash_fast(j, k, i))
+                        .colour(&world, rng, max_depth, background_color)
                 })
                 .fold(Color::BLACK, |a, b| a + b)
                 .as_bytes(samples_per_pixel)
