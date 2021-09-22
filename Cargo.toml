@@ -1,5 +1,5 @@
 [package]
-name = "raytracing-weekend"
+name = "simple-raytracer"
 version = "0.1.0"
 edition = "2018"
 
@@ -16,6 +16,3 @@ ron = "0.6"
 serde = "1.0"
 anyhow = "1.0"
 clap = "3.0.0-beta"
-
-[features]
-spectral_colors = []

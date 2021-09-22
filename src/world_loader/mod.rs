@@ -31,15 +31,15 @@ impl From<&Color> for color::Colour {
     fn from(c: &Color) -> Self {
         match c {
             /* IntRgb(r, g, b) => {
-                color::Color::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0)
+                color::Color::new(*r as f64 / 255.0, *g as f64 / 255.0, *b as f64 / 255.0)
             }*/
             Rgb(red, green, blue) => color::Colour::new(*red, *green, *blue),
             Hex(mut value) => {
-                let blue = (value % 256) as f32 / 255.0;
+                let blue = (value % 256) as f64 / 255.0;
                 value /= 256;
-                let green = (value % 256) as f32 / 255.0;
+                let green = (value % 256) as f64 / 255.0;
                 value /= 256;
-                let red = (value % 256) as f32 / 255.0;
+                let red = (value % 256) as f64 / 255.0;
                 color::Colour::new(red, green, blue)
             }
             Red => color::Colour::RED,
@@ -54,11 +54,11 @@ impl From<&Color> for color::Colour {
     }
 }
 
-impl From<&AspectRatio> for f32 {
+impl From<&AspectRatio> for f64 {
     fn from(aspect_ratio: &AspectRatio) -> Self {
         match aspect_ratio {
             AspectRatio::Float(f) => *f,
-            AspectRatio::Fraction(a, b) => *a as f32 / *b as f32,
+            AspectRatio::Fraction(a, b) => *a as f64 / *b as f64,
         }
     }
 }
@@ -68,7 +68,7 @@ impl std::ops::Mul<&AspectRatio> for u32 {
 
     fn mul(self, rhs: &AspectRatio) -> Self::Output {
         match rhs {
-            AspectRatio::Float(f) => (self as f32 * f) as u32,
+            AspectRatio::Float(f) => (self as f64 * f) as u32,
             AspectRatio::Fraction(a, b) => (self * a) / b,
         }
     }

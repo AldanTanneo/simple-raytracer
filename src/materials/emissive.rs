@@ -7,11 +7,11 @@ use crate::FastRng;
 #[derive(Debug, Clone)]
 pub struct Emissive {
     color: Colour,
-    intensity: f32,
+    intensity: f64,
 }
 
 impl Emissive {
-    pub fn new(color: Colour, intensity: f32) -> Self {
+    pub fn new(color: Colour, intensity: f64) -> Self {
         Self { color, intensity }
     }
 }

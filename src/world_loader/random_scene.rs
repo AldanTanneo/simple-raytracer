@@ -7,21 +7,21 @@ use crate::vec3::Vec3;
 impl Config {
     pub fn random_scene<T: Rng>(rng: &mut T) -> Self {
         let image = Image {
-            height: 800,
-            samples_per_pixel: 150,
-            max_depth: 50,
+            height: 405,
+            samples_per_pixel: 100,
+            max_depth: 20,
         };
         let camera = Camera::ThinLens {
             origin: (13.0, 2.0, 3.0),
             look_at: (0.0, 0.0, 0.0),
             up_vector: (0.0, 1.0, 0.0),
-            aspect_ratio: AspectRatio::Float(1.5),
-            vertical_fov: 20.0,
+            aspect_ratio: AspectRatio::Fraction(16, 9),
+            vertical_fov: 30.0,
             aperture: 0.1,
             focus_distance: 10.0,
         };
         let mut world = World {
-            background_color: Color::Rgb(0.5, 0.7, 1.0),
+            background_color: Color::White,
             materials: HashMap::new(),
             objects: Vec::new(),
         };
@@ -75,8 +75,8 @@ impl Config {
 
         for a in -11..11 {
             for b in -11..11 {
-                let (choose_mat, a_rand, b_rand): (f32, f32, f32) = rng.gen();
-                let center: Vec3 = (a as f32 + 0.9 * a_rand, 0.2, b as f32 + 0.9 * b_rand).into();
+                let (choose_mat, a_rand, b_rand): (f64, f64, f64) = rng.gen();
+                let center: Vec3 = (a as f64 + 0.9 * a_rand, 0.2, b as f64 + 0.9 * b_rand).into();
 
                 if (center - Vec3::new(4.0, 0.2, 0.0)).length_squared() > 0.81 {
                     if choose_mat < 0.8 {
@@ -87,9 +87,9 @@ impl Config {
                             material_name.clone(),
                             Material::Lambertian {
                                 albedo: Color::Rgb(
-                                    albedo.x as f32,
-                                    albedo.y as f32,
-                                    albedo.z as f32,
+                                    albedo.x as f64,
+                                    albedo.y as f64,
+                                    albedo.z as f64,
                                 ),
                             },
                         );
@@ -101,15 +101,15 @@ impl Config {
                     } else if choose_mat < 0.95 {
                         // metal
                         let albedo = Vec3::random(rng) * 0.5 + 0.5;
-                        let fuzziness = rng.gen::<f32>() * 0.5;
+                        let fuzziness = rng.gen::<f64>() * 0.5;
                         let material_name = format!("metal.{}.{}", a, b);
                         world.materials.insert(
                             material_name.clone(),
                             Material::Metal {
                                 albedo: Color::Rgb(
-                                    albedo.x as f32,
-                                    albedo.y as f32,
-                                    albedo.z as f32,
+                                    albedo.x as f64,
+                                    albedo.y as f64,
+                                    albedo.z as f64,
                                 ),
                                 fuzziness,
                             },
@@ -150,7 +150,7 @@ mod test {
     fn test_random_scene() {
         let scene = Config::random_scene(&mut rand::thread_rng());
 
-        let mut out_file = File::create("random_scene.ron").expect("Could not create file");
+        let mut out_file = File::create("random_scene2.ron").expect("Could not create file");
 
         to_writer_pretty(&mut out_file, &scene, PrettyConfig::new())
             .expect("Could not write to file");

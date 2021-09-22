@@ -1,6 +1,6 @@
 use rand::Rng;
 
-pub const MAX_PIXEL: f32 = 256.0 - f32::EPSILON;
+pub const MAX_PIXEL: f64 = 256.0 - f64::EPSILON;
 
 macro_rules! new_color {
     ($r:expr, $g:expr, $b:expr) => {
@@ -14,24 +14,24 @@ macro_rules! new_color {
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Colour {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
 }
 
 impl Colour {
     #[inline(always)]
-    pub fn red(self) -> f32 {
+    pub fn red(self) -> f64 {
         self.r
     }
 
     #[inline(always)]
-    pub fn green(self) -> f32 {
+    pub fn green(self) -> f64 {
         self.g
     }
 
     #[inline(always)]
-    pub fn blue(self) -> f32 {
+    pub fn blue(self) -> f64 {
         self.b
     }
 }
@@ -47,13 +47,13 @@ impl Colour {
     pub const WHITE: Self = new_color!(1.0, 1.0, 1.0);
 
     #[inline(always)]
-    pub fn new(r: f32, g: f32, b: f32) -> Self {
+    pub fn new(r: f64, g: f64, b: f64) -> Self {
         new_color!(r, g, b)
     }
 
     #[inline]
     pub fn as_bytes(&self, samples_per_pixel: u32) -> [u8; 3] {
-        let scale = 1.0 / samples_per_pixel as f32;
+        let scale = 1.0 / samples_per_pixel as f64;
 
         [
             ((self.red() * scale).sqrt() * MAX_PIXEL) as u8,
@@ -63,7 +63,7 @@ impl Colour {
     }
 
     #[inline]
-    pub const fn components(self) -> (f32, f32, f32) {
+    pub const fn components(self) -> (f64, f64, f64) {
         (self.r, self.g, self.b)
     }
 
@@ -74,7 +74,7 @@ impl Colour {
 
     #[inline]
     pub fn near_zero(self) -> bool {
-        let epsilon = 1e-8_f32;
+        let epsilon = 1e-8_f64;
         self.r.abs() < epsilon && self.g.abs() < epsilon && self.b.abs() < epsilon
     }
 
@@ -183,12 +183,12 @@ impl std::ops::DivAssign for Colour {
     }
 }
 
-/**** Operator overloading for f32 ****/
+/**** Operator overloading for f64 ****/
 
-impl std::ops::Add<f32> for Colour {
+impl std::ops::Add<f64> for Colour {
     type Output = Self;
 
-    fn add(self, rhs: f32) -> Self {
+    fn add(self, rhs: f64) -> Self {
         Self {
             r: self.r + rhs,
             g: self.g + rhs,
@@ -197,16 +197,16 @@ impl std::ops::Add<f32> for Colour {
     }
 }
 
-impl std::ops::AddAssign<f32> for Colour {
-    fn add_assign(&mut self, rhs: f32) {
+impl std::ops::AddAssign<f64> for Colour {
+    fn add_assign(&mut self, rhs: f64) {
         *self = *self + rhs;
     }
 }
 
-impl std::ops::Sub<f32> for Colour {
+impl std::ops::Sub<f64> for Colour {
     type Output = Self;
 
-    fn sub(self, rhs: f32) -> Self {
+    fn sub(self, rhs: f64) -> Self {
         Self {
             r: self.r - rhs,
             g: self.g - rhs,
@@ -215,16 +215,16 @@ impl std::ops::Sub<f32> for Colour {
     }
 }
 
-impl std::ops::SubAssign<f32> for Colour {
-    fn sub_assign(&mut self, rhs: f32) {
+impl std::ops::SubAssign<f64> for Colour {
+    fn sub_assign(&mut self, rhs: f64) {
         *self = *self - rhs;
     }
 }
 
-impl std::ops::Mul<f32> for Colour {
+impl std::ops::Mul<f64> for Colour {
     type Output = Self;
 
-    fn mul(self, rhs: f32) -> Self {
+    fn mul(self, rhs: f64) -> Self {
         Self {
             r: self.r * rhs,
             g: self.g * rhs,
@@ -233,16 +233,16 @@ impl std::ops::Mul<f32> for Colour {
     }
 }
 
-impl std::ops::MulAssign<f32> for Colour {
-    fn mul_assign(&mut self, rhs: f32) {
+impl std::ops::MulAssign<f64> for Colour {
+    fn mul_assign(&mut self, rhs: f64) {
         *self = *self * rhs;
     }
 }
 
-impl std::ops::Div<f32> for Colour {
+impl std::ops::Div<f64> for Colour {
     type Output = Self;
 
-    fn div(self, rhs: f32) -> Self {
+    fn div(self, rhs: f64) -> Self {
         Self {
             r: self.r / rhs,
             g: self.g / rhs,
@@ -251,14 +251,14 @@ impl std::ops::Div<f32> for Colour {
     }
 }
 
-impl std::ops::DivAssign<f32> for Colour {
-    fn div_assign(&mut self, rhs: f32) {
+impl std::ops::DivAssign<f64> for Colour {
+    fn div_assign(&mut self, rhs: f64) {
         *self = *self / rhs;
     }
 }
 
 impl std::ops::Index<usize> for Colour {
-    type Output = f32;
+    type Output = f64;
 
     fn index(&self, index: usize) -> &Self::Output {
         match index {

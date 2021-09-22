@@ -15,7 +15,7 @@ impl Ray {
         Self { origin, direction }
     }
 
-    pub fn at(&self, t: f32) -> Point3 {
+    pub fn at(&self, t: f64) -> Point3 {
         self.origin + self.direction * t
     }
 
@@ -29,7 +29,7 @@ impl Ray {
         let mut ray = self;
         let mut i = 0;
         let mut attenuation = Colour::WHITE;
-        while let Some(hit_record) = world.hit(&ray, 0.001, f32::INFINITY, rng) {
+        while let Some(hit_record) = world.hit(&ray, 0.001, f64::INFINITY, rng) {
             match hit_record.material.scatter(&ray, &hit_record, rng) {
                 ScatterResult::Ray(scattered_ray) => {
                     attenuation *= scattered_ray.attenuation;

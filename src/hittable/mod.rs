@@ -4,7 +4,7 @@ pub mod sphere;
 pub mod triangle;
 pub mod volumetric;
 
-use core::fmt::Debug;
+use std::fmt::Debug;
 
 use crate::bounding_boxes::BoundingBox;
 use crate::materials::Material;
@@ -16,7 +16,7 @@ use crate::FastRng;
 pub struct HitRecord<'a> {
     pub point: Point3,
     pub normal: Vec3,
-    pub time: f32,
+    pub time: f64,
     pub front_face: bool,
     pub material: &'a (dyn Material + 'a),
 }
@@ -27,7 +27,7 @@ impl<'a> HitRecord<'a> {
     pub fn new(
         point: Point3,
         outward_normal: Vec3,
-        time: f32,
+        time: f64,
         ray: &Ray,
         material: &'a (dyn Material + 'a),
     ) -> Self {
@@ -49,7 +49,7 @@ impl<'a> HitRecord<'a> {
 }
 
 pub trait Hittable: Debug + Send + Sync {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, rng: &mut FastRng) -> Hit;
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rng: &mut FastRng) -> Hit;
 
     fn bounding_box(&self) -> BoundingBox;
 }

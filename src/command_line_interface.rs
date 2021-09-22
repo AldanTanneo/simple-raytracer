@@ -9,7 +9,7 @@ pub struct Opts {
     /// A .ron configuration file
     #[clap(conflicts_with = "example")]
     pub scene: Option<String>,
-    /// An output image file
+    /// An output image file. Can be a .jpeg or .png
     #[clap(short, long, conflicts_with = "example")]
     pub output: Option<String>,
     /// Displays the BVH tree
@@ -18,9 +18,22 @@ pub struct Opts {
     /// Displays an example config file. Cannot be used with other arguments.
     #[clap(long, conflicts_with = "random")]
     pub example: bool,
+
+    #[clap(subcommand)]
+    pub random: Option<SubCommand>,
+}
+
+#[derive(Clap)]
+pub enum SubCommand {
     /// Renders a randomly generated scene
-    #[clap(long, conflicts_with = "scene")]
-    pub random: bool,
+    Random {
+        /// Saves the config .ron file to the specified output file name
+        #[clap(long)]
+        save: bool,
+        /// Random seed, to generate repeatable results
+        #[clap(long)]
+        seed: Option<u64>,
+    },
 }
 
 const EXAMPLE_FILE: &str = r#"/*

@@ -8,12 +8,12 @@ use crate::FastRng;
 #[derive(Debug, Clone)]
 pub struct Sphere<'a> {
     pub center: Point3,
-    pub radius: f32,
+    pub radius: f64,
     pub material: &'a (dyn Material + 'a),
 }
 
 impl<'a> Sphere<'a> {
-    pub fn new(center: Point3, radius: f32, material: &'a (dyn Material + 'a)) -> Self {
+    pub fn new(center: Point3, radius: f64, material: &'a (dyn Material + 'a)) -> Self {
         Self {
             center,
             radius,
@@ -23,7 +23,7 @@ impl<'a> Sphere<'a> {
 }
 
 impl<'a> Hittable for Sphere<'a> {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, _: &mut FastRng) -> Hit {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, _: &mut FastRng) -> Hit {
         let oc = ray.origin - self.center;
         let a = ray.direction.length_squared();
         let half_b = oc.dot(ray.direction);

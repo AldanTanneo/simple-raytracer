@@ -9,7 +9,7 @@ pub struct HittableList<'a> {
 }
 
 impl<'a> Hittable for HittableList<'a> {
-    fn hit(&self, ray: &Ray, t_min: f32, t_max: f32, rng: &mut FastRng) -> Hit {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64, rng: &mut FastRng) -> Hit {
         let mut record = None;
         let mut closest = t_max;
 

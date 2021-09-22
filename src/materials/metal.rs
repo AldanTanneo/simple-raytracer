@@ -8,7 +8,7 @@ use crate::FastRng;
 #[derive(Clone, Debug)]
 pub struct Metal {
     pub albedo: Colour,
-    pub fuzziness: f32,
+    pub fuzziness: f64,
 }
 
 impl Material for Metal {
@@ -27,7 +27,7 @@ impl Material for Metal {
 }
 
 impl Metal {
-    pub fn new(albedo: Colour, fuzziness: f32) -> Self {
+    pub fn new(albedo: Colour, fuzziness: f64) -> Self {
         Self { albedo, fuzziness }
     }
 }

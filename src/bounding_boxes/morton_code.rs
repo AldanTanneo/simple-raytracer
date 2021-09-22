@@ -1,6 +1,6 @@
 use crate::vec3::Vec3;
 
-const MAX_42_BITS: f32 = (1u128 << 42) as f32;
+const MAX_42_BITS: f64 = (1u128 << 42) as f64;
 
 /// Expands 42 bits integer to 128 bits by
 /// inserting two zeros after each bit

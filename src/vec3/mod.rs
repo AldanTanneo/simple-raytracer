@@ -7,9 +7,9 @@ pub type Point3 = Vec3;
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 pub struct Vec3 {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Vec3 {
@@ -20,27 +20,27 @@ impl Vec3 {
     pub const Z: Self = Self::new(0.0, 0.0, 1.0);
 
     #[inline]
-    pub const fn new(x: f32, y: f32, z: f32) -> Self {
+    pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
 
     #[inline]
-    pub const fn components(self) -> (f32, f32, f32) {
+    pub const fn components(self) -> (f64, f64, f64) {
         (self.x, self.y, self.z)
     }
 
     #[inline]
-    pub fn length_squared(self) -> f32 {
+    pub fn length_squared(self) -> f64 {
         self.x * self.x + self.y * self.y + self.z * self.z
     }
 
     #[inline]
-    pub fn length(self) -> f32 {
+    pub fn length(self) -> f64 {
         self.length_squared().sqrt()
     }
 
     #[inline]
-    pub fn dot(&self, rhs: Self) -> f32 {
+    pub fn dot(&self, rhs: Self) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
@@ -80,7 +80,7 @@ impl Vec3 {
     }
 
     #[inline]
-    pub fn random_in_unit_disk(mut r: f32, theta: f32) -> Self {
+    pub fn random_in_unit_disk(mut r: f64, theta: f64) -> Self {
         r = r.sqrt();
         Self {
             x: r * theta.cos(),
@@ -96,7 +96,7 @@ impl Vec3 {
 
     #[inline]
     pub fn near_zero(self) -> bool {
-        let epsilon = 1e-8_f32;
+        let epsilon = 1e-8_f64;
         self.x.abs() < epsilon && self.y.abs() < epsilon && self.z.abs() < epsilon
     }
 
@@ -106,7 +106,7 @@ impl Vec3 {
     }
 
     #[inline]
-    pub fn refract(self, normal: Self, refraction_ratio: f32) -> Self {
+    pub fn refract(self, normal: Self, refraction_ratio: f64) -> Self {
         let cos_theta = self.dot(-normal).min(1.0);
         let orth_out = (self + normal * cos_theta) * refraction_ratio;
         let parr_out = -normal * (1.0 - orth_out.length_squared()).abs().sqrt();
@@ -129,7 +129,7 @@ impl Vec3 {
         }
     }
 
-    pub fn min_max_coords(self) -> (f32, f32) {
+    pub fn min_max_coords(self) -> (f64, f64) {
         (
             self.x.min(self.y).min(self.z),
             self.x.max(self.y).max(self.z),
@@ -223,12 +223,12 @@ impl std::ops::DivAssign for Vec3 {
     }
 }
 
-/**** Operator overloading for f32 ****/
+/**** Operator overloading for f64 ****/
 
-impl std::ops::Add<f32> for Vec3 {
+impl std::ops::Add<f64> for Vec3 {
     type Output = Self;
 
-    fn add(self, rhs: f32) -> Self {
+    fn add(self, rhs: f64) -> Self {
         Self {
             x: self.x + rhs,
             y: self.y + rhs,
@@ -237,16 +237,16 @@ impl std::ops::Add<f32> for Vec3 {
     }
 }
 
-impl std::ops::AddAssign<f32> for Vec3 {
-    fn add_assign(&mut self, rhs: f32) {
+impl std::ops::AddAssign<f64> for Vec3 {
+    fn add_assign(&mut self, rhs: f64) {
         *self = *self + rhs;
     }
 }
 
-impl std::ops::Sub<f32> for Vec3 {
+impl std::ops::Sub<f64> for Vec3 {
     type Output = Self;
 
-    fn sub(self, rhs: f32) -> Self {
+    fn sub(self, rhs: f64) -> Self {
         Self {
             x: self.x - rhs,
             y: self.y - rhs,
@@ -255,16 +255,16 @@ impl std::ops::Sub<f32> for Vec3 {
     }
 }
 
-impl std::ops::SubAssign<f32> for Vec3 {
-    fn sub_assign(&mut self, rhs: f32) {
+impl std::ops::SubAssign<f64> for Vec3 {
+    fn sub_assign(&mut self, rhs: f64) {
         *self = *self - rhs;
     }
 }
 
-impl std::ops::Mul<f32> for Vec3 {
+impl std::ops::Mul<f64> for Vec3 {
     type Output = Self;
 
-    fn mul(self, rhs: f32) -> Self {
+    fn mul(self, rhs: f64) -> Self {
         Self {
             x: self.x * rhs,
             y: self.y * rhs,
@@ -273,16 +273,16 @@ impl std::ops::Mul<f32> for Vec3 {
     }
 }
 
-impl std::ops::MulAssign<f32> for Vec3 {
-    fn mul_assign(&mut self, rhs: f32) {
+impl std::ops::MulAssign<f64> for Vec3 {
+    fn mul_assign(&mut self, rhs: f64) {
         *self = *self * rhs;
     }
 }
 
-impl std::ops::Div<f32> for Vec3 {
+impl std::ops::Div<f64> for Vec3 {
     type Output = Self;
 
-    fn div(self, rhs: f32) -> Self {
+    fn div(self, rhs: f64) -> Self {
         Self {
             x: self.x / rhs,
             y: self.y / rhs,
@@ -291,14 +291,14 @@ impl std::ops::Div<f32> for Vec3 {
     }
 }
 
-impl std::ops::DivAssign<f32> for Vec3 {
-    fn div_assign(&mut self, rhs: f32) {
+impl std::ops::DivAssign<f64> for Vec3 {
+    fn div_assign(&mut self, rhs: f64) {
         *self = *self / rhs;
     }
 }
 
 impl std::ops::Index<usize> for Vec3 {
-    type Output = f32;
+    type Output = f64;
 
     fn index(&self, index: usize) -> &Self::Output {
         match index {

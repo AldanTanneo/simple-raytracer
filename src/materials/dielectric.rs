@@ -9,7 +9,7 @@ use crate::FastRng;
 #[derive(Debug, Clone)]
 pub struct Dielectric {
     pub attenuation: Colour,
-    pub refraction_index: f32,
+    pub refraction_index: f64,
 }
 
 impl Material for Dielectric {
@@ -35,14 +35,14 @@ impl Material for Dielectric {
 }
 
 impl Dielectric {
-    pub fn new(attenuation: Colour, refraction_index: f32) -> Self {
+    pub fn new(attenuation: Colour, refraction_index: f64) -> Self {
         Self {
             attenuation,
             refraction_index,
         }
     }
 
-    pub fn reflectance(&self, cos_theta: f32) -> f32 {
+    pub fn reflectance(&self, cos_theta: f64) -> f64 {
         let mut r0 = (1.0 - self.refraction_index) / (1.0 + self.refraction_index);
         r0 *= r0;
         r0 + (1.0 - r0) * (1.0 - cos_theta).powi(5)

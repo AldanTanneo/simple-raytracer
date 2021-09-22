@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub type Vector = (f32, f32, f32);
+pub type Vector = (f64, f64, f64);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -24,24 +24,24 @@ pub enum Camera {
         look_at: Vector,
         up_vector: Vector,
         aspect_ratio: AspectRatio,
-        aperture: f32,
-        vertical_fov: f32,
+        aperture: f64,
+        vertical_fov: f64,
         #[serde(default)]
-        focus_distance: f32,
+        focus_distance: f64,
     },
     Isomorphic {
         origin: Vector,
         look_at: Vector,
         up_vector: Vector,
         aspect_ratio: AspectRatio,
-        vertical_fov: f32,
+        vertical_fov: f64,
     },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum AspectRatio {
-    Float(f32),
+    Float(f64),
     Fraction(u32, u32),
 }
 
@@ -59,21 +59,21 @@ pub enum Material {
     },
     Metal {
         albedo: Color,
-        fuzziness: f32,
+        fuzziness: f64,
     },
     Dielectric {
         attenuation: Color,
-        refraction_index: f32,
+        refraction_index: f64,
     },
     Emissive {
         color: Color,
-        intensity: f32,
+        intensity: f64,
     },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum Color {
-    Rgb(f32, f32, f32),
+    Rgb(f64, f64, f64),
     Hex(u32),
     Red,
     Green,
@@ -89,7 +89,7 @@ pub enum Color {
 pub enum Object {
     Sphere {
         center: Vector,
-        radius: f32,
+        radius: f64,
         material: String,
     },
     Triangle {
@@ -104,8 +104,8 @@ pub enum Object {
     },
     Volumetric {
         center: Vector,
-        radius: f32,
-        density: f32,
+        radius: f64,
+        density: f64,
         material: String,
     },
 }

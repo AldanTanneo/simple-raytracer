@@ -10,9 +10,9 @@ mod ray;
 mod vec3;
 mod world_loader;
 
-use std::f32::consts::TAU;
+use std::{f64::consts::TAU, fs::File};
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Clap;
 use image::{ImageBuffer, Rgb};
 use indicatif::{ParallelProgressIterator, ProgressBar, ProgressFinish, ProgressStyle};
@@ -23,23 +23,26 @@ use fast_random::SplitMix64;
 pub use materials::{
     dielectric::Dielectric, emissive::Emissive, lambertian::Lambertian, metal::Metal, ScatterResult,
 };
+use ron::ser::{to_writer_pretty, PrettyConfig};
 use vec3::color::Colour;
 use world_loader::Config;
+
+use crate::command_line_interface::SubCommand;
 
 pub type FastRng = SplitMix64;
 
 const M1: u32 = 1597334677u32;
 const M2: u32 = 3812015801u32;
 const M3: u32 = 2741598923u32;
-const M4: f32 = 1.0 / 0xffffffffu32 as f32;
+const M4: f64 = 1.0 / 0xffffffffu32 as f64;
 
 #[inline(always)]
-pub fn hash_fast(mut x: u32, mut y: u32, mut z: u32) -> f32 {
+pub fn hash_fast(mut x: u32, mut y: u32, mut z: u32) -> f64 {
     x *= M1;
     y *= M2;
     z *= M3;
     let n: u32 = (x ^ y ^ z) * M1;
-    n as f32 * M4
+    n as f64 * M4
 }
 
 fn main() -> Result<()> {
@@ -55,11 +58,33 @@ fn main() -> Result<()> {
             config_file.ends_with(".ron"),
             "Expecting a .ron config file."
         );
-        Config::parse(config_file)?
-    } else if opts.random {
-        println!("Rendering a random scene (image size: 800x1200, 150spp).");
+        Config::parse(config_file).with_context(|| "Error parsing the config file")?
+    } else if let Some(SubCommand::Random { save, seed }) = &opts.random {
         opts.scene = Some("random_scene.ron".into());
-        Config::random_scene(&mut global_rng)
+        let config = if let Some(seed) = seed {
+            Config::random_scene(&mut FastRng::new(*seed))
+        } else {
+            Config::random_scene(&mut global_rng)
+        };
+        if *save {
+            let out_file_name = if let Some(out) = &opts.output {
+                out
+            } else {
+                "random_scene.ron"
+            };
+            let output_file = File::create(out_file_name)
+                .with_context(|| "Error creating the random config file")?;
+            println!("Saving randomly generated scene to {}", out_file_name);
+            to_writer_pretty(output_file, &config, PrettyConfig::new())?;
+            return Ok(());
+        }
+        println!(
+            "Rendering a random scene (image size: {}x{}, {}spp).",
+            config.image.height,
+            config.image.height * config.aspect_ratio(),
+            config.image.samples_per_pixel
+        );
+        config
     } else {
         anyhow::bail!("There's nothing to render. Use --help to learn more.")
     };
@@ -90,7 +115,8 @@ fn main() -> Result<()> {
     let camera = config.camera();
     let materials = config.materials();
     let hittables = config.world(&materials)?;
-    let world = BoundingVolumeHierarchy::build(&hittables)?;
+    let world = BoundingVolumeHierarchy::build(&hittables)
+        .with_context(|| "Error building the BVH tree")?;
 
     let (depth, nodes) = world.depth_and_num_nodes();
     println!(
@@ -119,8 +145,8 @@ fn main() -> Result<()> {
 
             (0..samples_per_pixel)
                 .map(|k| {
-                    let u = (i as f32 + hash_fast(i, j, k)) / (image_width - 1) as f32;
-                    let v = (j as f32 + hash_fast(i, k, j)) / (image_height - 1) as f32;
+                    let u = (i as f64 + hash_fast(i, j, k)) / (image_width - 1) as f64;
+                    let v = (j as f64 + hash_fast(i, k, j)) / (image_height - 1) as f64;
 
                     camera
                         .get_ray(u, v, hash_fast(j, i, k), TAU * hash_fast(j, k, i))
@@ -133,7 +159,7 @@ fn main() -> Result<()> {
 
     let img: ImageBuffer<Rgb<u8>, Vec<u8>> =
         ImageBuffer::from_vec(image_width, image_height, buffer)
-            .expect("Image buffer size mismatch");
+            .ok_or_else(|| anyhow::anyhow!("Could not create image buffer: size mismatch"))?;
 
     pb.println(format!(
         "Scene rendered in {} seconds.\nSaving as {}...",

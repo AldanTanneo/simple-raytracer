@@ -4,7 +4,7 @@ use crate::vec3::{Point3, Vec3};
 #[derive(Clone, Debug)]
 pub enum CameraType {
     ThinLens {
-        lens_radius: f32,
+        lens_radius: f64,
         base: (Vec3, Vec3),
         to_lower_left_corner: Vec3,
     },
@@ -27,10 +27,10 @@ impl Camera {
         origin: Point3,
         look_at: Point3,
         up_vector: Vec3,
-        aspect_ratio: f32,
-        aperture: f32,
-        focus_dist: f32,
-        vertical_fov: f32,
+        aspect_ratio: f64,
+        aperture: f64,
+        focus_dist: f64,
+        vertical_fov: f64,
     ) -> Self {
         let theta = vertical_fov.to_radians();
         let h = (0.5 * theta).tan();
@@ -62,8 +62,8 @@ impl Camera {
         origin: Point3,
         look_at: Point3,
         up_vector: Vec3,
-        aspect_ratio: f32,
-        vertical_fov: f32,
+        aspect_ratio: f64,
+        vertical_fov: f64,
     ) -> Self {
         let theta = vertical_fov.to_radians();
         let h = (0.5 * theta).tan();
@@ -87,7 +87,7 @@ impl Camera {
         }
     }
 
-    pub fn get_ray(&self, u: f32, v: f32, r: f32, theta: f32) -> Ray {
+    pub fn get_ray(&self, u: f64, v: f64, r: f64, theta: f64) -> Ray {
         match self.camera_type {
             CameraType::Isomorphic { direction } => Ray::new(
                 self.lower_left_corner + self.horizontal * u + self.vertical * v,
