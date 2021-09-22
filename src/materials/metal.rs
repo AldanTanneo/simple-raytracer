@@ -1,13 +1,13 @@
 use super::{Material, ScatterResult};
 use crate::hittable::HitRecord;
 use crate::ray::{Ray, ScatteredRay};
-use crate::vec3::color::Color;
+use crate::vec3::color::Colour;
 use crate::vec3::Vec3;
 use crate::FastRng;
 
 #[derive(Clone, Debug)]
 pub struct Metal {
-    pub albedo: Color,
+    pub albedo: Colour,
     pub fuzziness: f32,
 }
 
@@ -27,7 +27,7 @@ impl Material for Metal {
 }
 
 impl Metal {
-    pub fn new(albedo: Color, fuzziness: f32) -> Self {
+    pub fn new(albedo: Colour, fuzziness: f32) -> Self {
         Self { albedo, fuzziness }
     }
 }

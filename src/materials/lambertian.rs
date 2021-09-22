@@ -1,13 +1,13 @@
 use super::{Material, ScatterResult};
 use crate::hittable::HitRecord;
 use crate::ray::{Ray, ScatteredRay};
-use crate::vec3::color::Color;
+use crate::vec3::color::Colour;
 use crate::vec3::Vec3;
 use crate::FastRng;
 
 #[derive(Clone, Debug)]
 pub struct Lambertian {
-    pub albedo: Color,
+    pub albedo: Colour,
 }
 
 impl Material for Lambertian {
@@ -22,7 +22,7 @@ impl Material for Lambertian {
 }
 
 impl Lambertian {
-    pub const fn new(albedo: Color) -> Self {
+    pub const fn new(albedo: Colour) -> Self {
         Self { albedo }
     }
 }

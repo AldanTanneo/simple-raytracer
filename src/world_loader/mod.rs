@@ -27,29 +27,29 @@ impl From<Vector> for Vec3 {
 
 use Color::*;
 
-impl From<&Color> for color::Color {
+impl From<&Color> for color::Colour {
     fn from(c: &Color) -> Self {
         match c {
             /* IntRgb(r, g, b) => {
                 color::Color::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0)
             }*/
-            Rgb(red, green, blue) => color::Color::new(*red, *green, *blue),
+            Rgb(red, green, blue) => color::Colour::new(*red, *green, *blue),
             Hex(mut value) => {
                 let blue = (value % 256) as f32 / 255.0;
                 value /= 256;
                 let green = (value % 256) as f32 / 255.0;
                 value /= 256;
                 let red = (value % 256) as f32 / 255.0;
-                color::Color::new(red, green, blue)
+                color::Colour::new(red, green, blue)
             }
-            Red => color::Color::RED,
-            Green => color::Color::GREEN,
-            Blue => color::Color::BLUE,
-            Yellow => color::Color::YELLOW,
-            Magenta => color::Color::MAGENTA,
-            Cyan => color::Color::CYAN,
-            Black => color::Color::BLACK,
-            White => color::Color::WHITE,
+            Red => color::Colour::RED,
+            Green => color::Colour::GREEN,
+            Blue => color::Colour::BLUE,
+            Yellow => color::Colour::YELLOW,
+            Magenta => color::Colour::MAGENTA,
+            Cyan => color::Colour::CYAN,
+            Black => color::Colour::BLACK,
+            White => color::Colour::WHITE,
         }
     }
 }

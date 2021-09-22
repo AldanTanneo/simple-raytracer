@@ -1,17 +1,17 @@
 use super::{Material, ScatterResult};
 use crate::hittable::HitRecord;
 use crate::ray::Ray;
-use crate::vec3::color::Color;
+use crate::vec3::color::Colour;
 use crate::FastRng;
 
 #[derive(Debug, Clone)]
 pub struct Emissive {
-    color: Color,
+    color: Colour,
     intensity: f32,
 }
 
 impl Emissive {
-    pub fn new(color: Color, intensity: f32) -> Self {
+    pub fn new(color: Colour, intensity: f32) -> Self {
         Self { color, intensity }
     }
 }

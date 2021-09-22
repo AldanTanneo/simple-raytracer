@@ -23,7 +23,7 @@ use fast_random::SplitMix64;
 pub use materials::{
     dielectric::Dielectric, emissive::Emissive, lambertian::Lambertian, metal::Metal, ScatterResult,
 };
-use vec3::color::Color;
+use vec3::color::Colour;
 use world_loader::Config;
 
 pub type FastRng = SplitMix64;
@@ -126,7 +126,7 @@ fn main() -> Result<()> {
                         .get_ray(u, v, hash_fast(j, i, k), TAU * hash_fast(j, k, i))
                         .colour(&world, rng, max_depth, background_color)
                 })
-                .fold(Color::BLACK, |a, b| a + b)
+                .fold(Colour::BLACK, |a, b| a + b)
                 .as_bytes(samples_per_pixel)
         })
         .collect();

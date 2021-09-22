@@ -8,13 +8,13 @@ use core::fmt::Debug;
 
 use crate::hittable::HitRecord;
 use crate::ray::{Ray, ScatteredRay};
-use crate::vec3::color::Color;
+use crate::vec3::color::Colour;
 use crate::FastRng;
 
 #[derive(Debug, Clone)]
 pub enum ScatterResult {
     Ray(ScatteredRay),
-    Emissive(Color),
+    Emissive(Colour),
     Absorbed,
 }
 

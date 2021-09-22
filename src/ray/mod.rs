@@ -1,6 +1,6 @@
 use crate::hittable::Hittable;
 use crate::materials::ScatterResult;
-use crate::vec3::color::Color;
+use crate::vec3::color::Colour;
 use crate::vec3::{Point3, Vec3};
 use crate::FastRng;
 
@@ -24,11 +24,11 @@ impl Ray {
         world: &H,
         rng: &mut FastRng,
         max_depth: u32,
-        background_color: Color,
-    ) -> Color {
+        background_color: Colour,
+    ) -> Colour {
         let mut ray = self;
         let mut i = 0;
-        let mut attenuation = Color::WHITE;
+        let mut attenuation = Colour::WHITE;
         while let Some(hit_record) = world.hit(&ray, 0.001, f32::INFINITY, rng) {
             match hit_record.material.scatter(&ray, &hit_record, rng) {
                 ScatterResult::Ray(scattered_ray) => {
@@ -52,11 +52,11 @@ impl Ray {
 #[derive(Clone, Debug)]
 pub struct ScatteredRay {
     pub ray: Ray,
-    pub attenuation: Color,
+    pub attenuation: Colour,
 }
 
 impl ScatteredRay {
-    pub fn new(ray: Ray, attenuation: Color) -> Self {
+    pub fn new(ray: Ray, attenuation: Colour) -> Self {
         Self { ray, attenuation }
     }
 }

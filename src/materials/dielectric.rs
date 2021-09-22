@@ -3,12 +3,12 @@ use rand::Rng;
 use super::{Material, ScatterResult};
 use crate::hittable::HitRecord;
 use crate::ray::{Ray, ScatteredRay};
-use crate::vec3::color::Color;
+use crate::vec3::color::Colour;
 use crate::FastRng;
 
 #[derive(Debug, Clone)]
 pub struct Dielectric {
-    pub attenuation: Color,
+    pub attenuation: Colour,
     pub refraction_index: f32,
 }
 
@@ -35,7 +35,7 @@ impl Material for Dielectric {
 }
 
 impl Dielectric {
-    pub fn new(attenuation: Color, refraction_index: f32) -> Self {
+    pub fn new(attenuation: Colour, refraction_index: f32) -> Self {
         Self {
             attenuation,
             refraction_index,
