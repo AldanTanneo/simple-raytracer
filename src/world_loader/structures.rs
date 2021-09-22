@@ -69,6 +69,10 @@ pub enum Material {
         color: Color,
         intensity: f64,
     },
+    Plastic {
+        albedo: Color,
+        roughness: f64,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

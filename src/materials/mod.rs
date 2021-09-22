@@ -3,6 +3,7 @@ pub mod dielectric;
 pub mod emissive;
 pub mod lambertian;
 pub mod metal;
+pub mod plastic;
 
 use core::fmt::Debug;
 

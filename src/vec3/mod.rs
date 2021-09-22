@@ -80,6 +80,16 @@ impl Vec3 {
     }
 
     #[inline]
+    pub fn random_in_hemisphere<T: Rng>(rng: &mut T, normal: Self) -> Self {
+        let res = Self::random_unit_vector(rng);
+        if res.dot(normal) <= 0.0 {
+            -res
+        } else {
+            res
+        }
+    }
+
+    #[inline]
     pub fn random_in_unit_disk(mut r: f64, theta: f64) -> Self {
         r = r.sqrt();
         Self {

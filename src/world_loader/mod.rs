@@ -11,7 +11,7 @@ use crate::{
     hittable::hittable_list,
     hittable::{quad, sphere, triangle, volumetric},
     materials,
-    materials::{dielectric, emissive, lambertian, metal},
+    materials::{dielectric, emissive, lambertian, metal, plastic},
     vec3::{color, Vec3},
 };
 
@@ -136,6 +136,9 @@ impl From<&Material> for Box<dyn materials::Material> {
             )),
             Material::Emissive { color, intensity } => {
                 Box::new(emissive::Emissive::new(color.into(), *intensity))
+            }
+            Material::Plastic { albedo, roughness } => {
+                Box::new(plastic::Plastic::new(albedo.into(), *roughness))
             }
         }
     }
