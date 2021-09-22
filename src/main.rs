@@ -36,6 +36,7 @@ const M2: u32 = 3812015801u32;
 const M3: u32 = 2741598923u32;
 const M4: f64 = 1.0 / 0xffffffffu32 as f64;
 
+/// Quick hasher function to avoid an expensive call to the rng
 #[inline(always)]
 pub fn hash_fast(mut x: u32, mut y: u32, mut z: u32) -> f64 {
     x *= M1;
@@ -59,7 +60,7 @@ fn main() -> Result<()> {
             "Expecting a .ron config file."
         );
         Config::parse(config_file).with_context(|| "Error parsing the config file")?
-    } else if let Some(SubCommand::Random { save, seed }) = &opts.random {
+    } else if let Some(SubCommand::Random { save, seed, output }) = &opts.random {
         opts.scene = Some("random_scene.ron".into());
         let config = if let Some(seed) = seed {
             Config::random_scene(&mut FastRng::new(*seed))
@@ -67,7 +68,7 @@ fn main() -> Result<()> {
             Config::random_scene(&mut global_rng)
         };
         if *save {
-            let out_file_name = if let Some(out) = &opts.output {
+            let out_file_name = if let Some(out) = output {
                 out
             } else {
                 "random_scene.ron"
@@ -77,6 +78,8 @@ fn main() -> Result<()> {
             println!("Saving randomly generated scene to {}", out_file_name);
             to_writer_pretty(output_file, &config, PrettyConfig::new())?;
             return Ok(());
+        } else if let Some(out) = output {
+            opts.output = Some(out.clone());
         }
         println!(
             "Rendering a random scene (image size: {}x{}, {}spp).",

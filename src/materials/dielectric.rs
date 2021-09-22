@@ -42,7 +42,7 @@ impl Dielectric {
         }
     }
 
-    pub fn reflectance(&self, cos_theta: f64) -> f64 {
+    fn reflectance(&self, cos_theta: f64) -> f64 {
         let mut r0 = (1.0 - self.refraction_index) / (1.0 + self.refraction_index);
         r0 *= r0;
         r0 + (1.0 - r0) * (1.0 - cos_theta).powi(5)

@@ -16,7 +16,7 @@ pub struct Opts {
     #[clap(short, long, conflicts_with = "example")]
     pub tree: bool,
     /// Displays an example config file. Cannot be used with other arguments.
-    #[clap(long, conflicts_with = "random")]
+    #[clap(long)]
     pub example: bool,
 
     #[clap(subcommand)]
@@ -27,6 +27,9 @@ pub struct Opts {
 pub enum SubCommand {
     /// Renders a randomly generated scene
     Random {
+        /// An output image or config file. Can be a .jpeg, a .png or a .ron
+        #[clap(short, long)]
+        output: Option<String>,
         /// Saves the config .ron file to the specified output file name
         #[clap(long)]
         save: bool,
