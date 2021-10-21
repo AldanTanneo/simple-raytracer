@@ -54,7 +54,7 @@ impl BoundingBox {
 
 #[derive(Debug)]
 enum SubHierarchy<'a> {
-    Object(&'a Box<dyn Hittable + 'a>),
+    Object(&'a (dyn Hittable + 'a)),
     SubHierarchies {
         left: Box<BoundingVolumeHierarchy<'a>>,
         right: Box<BoundingVolumeHierarchy<'a>>,
@@ -92,14 +92,20 @@ impl<'a> BoundingVolumeHierarchy<'a> {
                 })
                 .collect::<Vec<_>>()
                 .into_iter()
-                .map(|(obj, bbox, center)| (obj, bbox, morton_code((center - min) / (max - min))))
+                .map(|(obj, bbox, center)| {
+                    (
+                        obj.as_ref(),
+                        bbox,
+                        morton_code((center - min) / (max - min)),
+                    )
+                })
                 .collect();
             precomputed_bounding_boxes.sort_unstable_by_key(|elt| elt.2);
             Ok(Self::from_list(&precomputed_bounding_boxes[..]))
         }
     }
 
-    fn from_list(list: &[(&'a Box<dyn Hittable + 'a>, BoundingBox, u128)]) -> Self {
+    fn from_list(list: &[(&'a (dyn Hittable + 'a), BoundingBox, u128)]) -> Self {
         match list {
             [] => unreachable!(),
             [(obj, bbox, _)] => Self {
@@ -163,7 +169,7 @@ impl<'a> Hittable for BoundingVolumeHierarchy<'a> {
         if self.bounding_box.hit(ray, t_min, t_max) {
             match &self.sub_hierarchy {
                 Object(object) => object.hit(ray, t_min, t_max, rng),
-                SubHierarchies { left, right, .. } => {
+                SubHierarchies { left, right } => {
                     if let Some(left_record) = left.hit(ray, t_min, t_max, rng) {
                         if let Some(right_record) = right.hit(ray, t_min, left_record.time, rng) {
                             Some(right_record)

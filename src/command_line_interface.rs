@@ -1,42 +1,106 @@
-use clap::{AppSettings, Clap};
+use std::{fs::File, path::PathBuf};
+
+use anyhow::{ensure, Context, Result};
+use clap::{AppSettings, Clap, ValueHint};
+use rand::Rng;
+use ron::ser::{to_writer_pretty, PrettyConfig};
+
+use crate::world_loader::Config;
+use crate::FastRng;
 
 /// A CPU-based raytracer
 #[derive(Clap)]
 #[clap(version = "1.0", author = "César Sagaert <sagaert.cesar@gmail.com>")]
 #[clap(setting = AppSettings::ColoredHelp)]
 #[clap(setting = AppSettings::ArgRequiredElseHelp)]
-pub struct Opts {
-    /// A .ron configuration file
-    #[clap(conflicts_with = "example")]
-    pub scene: Option<String>,
-    /// An output image file. Can be a .jpeg or .png
-    #[clap(short, long, conflicts_with = "example")]
-    pub output: Option<String>,
-    /// Displays the BVH tree
-    #[clap(short, long, conflicts_with = "example")]
-    pub tree: bool,
-    /// Displays an example config file. Cannot be used with other arguments.
-    #[clap(long)]
-    pub example: bool,
-
-    #[clap(subcommand)]
-    pub random: Option<SubCommand>,
-}
-
-#[derive(Clap)]
-pub enum SubCommand {
-    /// Renders a randomly generated scene
-    Random {
-        /// An output image or config file. Can be a .jpeg, a .png or a .ron
+pub enum Opts {
+    /// Render a scene according to a configuration file
+    Render {
+        /// A .ron configuration file
+        #[clap(parse(from_os_str), value_hint = ValueHint::FilePath)]
+        config: PathBuf,
+        /// An output image file. Can be a .jpeg or .png
+        #[clap(short, long, parse(from_os_str), value_hint = ValueHint::FilePath)]
+        output: Option<PathBuf>,
+        /// Displays the BVH tree
         #[clap(short, long)]
-        output: Option<String>,
-        /// Saves the config .ron file to the specified output file name
-        #[clap(long)]
-        save: bool,
+        tree: bool,
+    },
+    /// Renders a semi-randomly generated scene
+    Random {
+        /// An output image or config file. Can be a .jpeg or a .png
+        #[clap(short, long, default_value = "random_scene.png", parse(from_os_str), value_hint = ValueHint::FilePath)]
+        output: PathBuf,
+        /// If specified, saves the config .ron file to the given file name
+        #[clap(long, parse(from_os_str), value_hint = ValueHint::FilePath)]
+        save: Option<PathBuf>,
         /// Random seed, to generate repeatable results
         #[clap(long)]
         seed: Option<u64>,
+        /// Displays the BVH tree
+        #[clap(short, long)]
+        tree: bool,
     },
+    /// Display an example configuration file
+    Example,
+}
+
+#[derive(Clone, Debug)]
+pub struct EarlyReturn;
+
+impl std::fmt::Display for EarlyReturn {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Early Return")
+    }
+}
+
+impl Opts {
+    pub fn parse(self, rng: &mut impl Rng) -> Result<(Config, PathBuf, bool)> {
+        match self {
+            Self::Render {
+                config,
+                output,
+                tree,
+            } => {
+                ensure!(
+                    config.extension().map(|s| s == "ron").unwrap_or_default(),
+                    "Expecting a .ron config file."
+                );
+                let parsed_config =
+                    Config::parse(&config).with_context(|| "Error parsing the config file")?;
+                let output_file = output.unwrap_or_else(|| config.with_extension("png"));
+                Ok((parsed_config, output_file, tree))
+            }
+            Self::Random {
+                output,
+                save,
+                tree,
+                seed,
+            } => {
+                let config = if let Some(seed) = seed {
+                    Config::random_scene(&mut FastRng::new(seed))
+                } else {
+                    Config::random_scene(rng)
+                };
+                if let Some(file) = save {
+                    let out_file = File::create(&file)
+                        .with_context(|| "Error creating the random config file")?;
+                    println!("Saving randomly generated scene to `{}`", file.display());
+                    to_writer_pretty(out_file, &config, PrettyConfig::new())?;
+                }
+                println!(
+                    "Rendering a random scene (image size: {}x{}, {}spp).",
+                    config.image.height,
+                    config.image.height * config.aspect_ratio(),
+                    config.image.samples_per_pixel
+                );
+                Ok((config, output, tree))
+            }
+            Self::Example => {
+                panic!("This case should have been handled earlier.")
+            }
+        }
+    }
 }
 
 const EXAMPLE_FILE: &str = r#"/*
@@ -78,6 +142,10 @@ Config(
                 color: Yellow,
                 intensity: 2.0,
             ),
+            "plastic": Plastic(
+                albedo: Blue,
+                roughness: 0.5,
+            )
         },
         objects: [
             Sphere(

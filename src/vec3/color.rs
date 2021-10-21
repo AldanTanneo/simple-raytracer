@@ -52,7 +52,7 @@ impl Colour {
     }
 
     #[inline]
-    pub fn as_bytes(&self, samples_per_pixel: u32) -> [u8; 3] {
+    pub fn as_bytes(self, samples_per_pixel: u32) -> [u8; 3] {
         let scale = 1.0 / samples_per_pixel as f64;
 
         [
@@ -93,6 +93,15 @@ impl Colour {
             r: self.r.max(rhs.r),
             g: self.g.max(rhs.g),
             b: self.b.max(rhs.b),
+        }
+    }
+
+    #[inline]
+    pub fn clamp(self) -> Self {
+        Self {
+            r: self.r.clamp(0.0, 1.0),
+            g: self.g.clamp(0.0, 1.0),
+            b: self.b.clamp(0.0, 1.0),
         }
     }
 }

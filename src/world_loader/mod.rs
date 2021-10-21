@@ -3,8 +3,8 @@ mod structures;
 
 use anyhow::{anyhow, Result};
 use ron::de::from_reader;
-use std::collections::HashMap;
 use std::fs::File;
+use std::{collections::HashMap, path::Path};
 
 use crate::{
     camera,
@@ -33,7 +33,7 @@ impl From<&Color> for color::Colour {
             /* IntRgb(r, g, b) => {
                 color::Color::new(*r as f64 / 255.0, *g as f64 / 255.0, *b as f64 / 255.0)
             }*/
-            Rgb(red, green, blue) => color::Colour::new(*red, *green, *blue),
+            Rgb(red, green, blue) => color::Colour::new(*red, *green, *blue).clamp(),
             Hex(mut value) => {
                 let blue = (value % 256) as f64 / 255.0;
                 value /= 256;
@@ -145,7 +145,7 @@ impl From<&Material> for Box<dyn materials::Material> {
 }
 
 impl Config {
-    pub fn parse(filename: &str) -> Result<Self> {
+    pub fn parse<P: AsRef<Path>>(filename: P) -> Result<Self> {
         let file = File::open(filename)?;
         from_reader::<File, Config>(file).map_err(|e| anyhow!(e))
     }
@@ -250,28 +250,5 @@ impl Config {
             }
         }
         Ok(world)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use ron::from_str;
-    use serde::Deserialize;
-
-    #[derive(Clone, Debug, Deserialize)]
-    struct Color {
-        val: u32,
-    }
-
-    const TEST: &str = r#"
-Color(
-    val: 0xffffff
-)
-"#;
-
-    #[test]
-    fn test() {
-        let test = from_str::<Color>(TEST);
-        println!("{:?}", test);
     }
 }

@@ -14,9 +14,11 @@ impl fmt::Debug for SplitMix64 {
 }
 
 impl SplitMix64 {
+    /// Creates a new SplitMix64 instance from the given seed.
     pub const fn new(seed: u64) -> Self {
         Self(seed)
     }
+
     /// Creates a new SplitMix64 instance which is not seeded.
     ///
     /// The initial value of this RNG is a constant, so all generators created
@@ -27,8 +29,10 @@ impl SplitMix64 {
         Self(0x193a6754)
     }
 
-    /// Global random number generator with a unique state value, does not need
-    /// to be secure, therefore allowed to be borrowed mutably anywhere in the program.
+    /// Global random number generator with a unique state value.
+    ///
+    /// This is safe on 64-bits architectures, where u64 reads and writes
+    /// are atomic.
     #[allow(clippy::mut_from_ref)]
     pub fn as_mut(&self) -> &mut Self {
         unsafe {
